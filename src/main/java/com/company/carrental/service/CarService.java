@@ -18,14 +18,29 @@ public class CarService {
     }
 
     public List<CarDTO> findAvailableCars(String carType, String transmissionType) {
-        List<Car> cars = carRepository.findByStatusAndCarTypeAndTransmissionType("AVAILABLE", carType, transmissionType);
+        List<Car> cars;
+
+        if ((carType == null || carType.isEmpty()) && (transmissionType == null || transmissionType.isEmpty())) {
+            // No filters provided, return all available cars
+            cars = carRepository.findByStatus("AVAILABLE");
+        } else if (carType == null || carType.isEmpty()) {
+            // Filter by transmission type only
+            cars = carRepository.findByStatusAndTransmissionType("AVAILABLE", transmissionType);
+        } else if (transmissionType == null || transmissionType.isEmpty()) {
+            // Filter by car type only
+            cars = carRepository.findByStatusAndCarType("AVAILABLE", carType);
+        } else {
+            // Filter by both car type and transmission type
+            cars = carRepository.findByStatusAndCarTypeAndTransmissionType("AVAILABLE", carType, transmissionType);
+        }
+
         return cars.stream()
-                   .map(car -> new CarDTO(
-                           car.getBrand(),
-                           car.getModel(),
-                           car.getCarType(),
-                           car.getTransmissionType(),
-                           car.getBarcode()))
-                   .collect(Collectors.toList());
+                .map(car -> new CarDTO(
+                        car.getBrand(),
+                        car.getModel(),
+                        car.getCarType(),
+                        car.getTransmissionType(),
+                        car.getBarcode()))
+                .collect(Collectors.toList());
     }
 }

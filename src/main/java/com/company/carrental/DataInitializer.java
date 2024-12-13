@@ -5,7 +5,7 @@ import com.company.carrental.repository.*;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import java.time.LocalDateTime; // Import for LocalDateTime
+import java.time.LocalDateTime;
 import java.util.Arrays;
 
 @Component
@@ -16,15 +16,17 @@ public class DataInitializer implements CommandLineRunner {
     private final CarRepository carRepository;
     private final EquipmentRepository equipmentRepository;
     private final ReservationRepository reservationRepository;
+    private final ServiceRepository serviceRepository;
 
     public DataInitializer(MemberRepository memberRepository, LocationRepository locationRepository,
                            CarRepository carRepository, EquipmentRepository equipmentRepository,
-                           ReservationRepository reservationRepository) {
+                           ReservationRepository reservationRepository, ServiceRepository serviceRepository) {
         this.memberRepository = memberRepository;
         this.locationRepository = locationRepository;
         this.carRepository = carRepository;
         this.equipmentRepository = equipmentRepository;
         this.reservationRepository = reservationRepository;
+        this.serviceRepository = serviceRepository;
     }
 
     @Override
@@ -61,12 +63,33 @@ public class DataInitializer implements CommandLineRunner {
         Equipment equipment5 = new Equipment("ROOF_BOX", "Roof Box", 25.0);
         equipmentRepository.saveAll(Arrays.asList(equipment1, equipment2, equipment3, equipment4, equipment5));
 
+        // Insert services
+        Service service1 = new Service("ROAD_ASSIST", "Roadside Assistance", 20.0);
+        Service service2 = new Service("ADD_DRIVER", "Additional Driver", 25.0);
+        Service service3 = new Service("CAR_WASH", "Car Wash", 15.0);
+        Service service4 = new Service("INSURANCE", "Insurance Coverage", 30.0);
+        Service service5 = new Service("TOWING", "Towing Service", 50.0);
+        serviceRepository.saveAll(Arrays.asList(service1, service2, service3, service4, service5));
+
         // Insert reservations
         Reservation reservation1 = new Reservation("R000001", LocalDateTime.now(), LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(5), "ACTIVE", car1, member1, location1, location2);
         Reservation reservation2 = new Reservation("R000002", LocalDateTime.now(), LocalDateTime.now().plusDays(2), LocalDateTime.now().plusDays(6), "ACTIVE", car2, member2, location3, location4);
         Reservation reservation3 = new Reservation("R000003", LocalDateTime.now(), LocalDateTime.now().plusDays(3), LocalDateTime.now().plusDays(7), "PENDING", car3, member3, location4, location5);
         Reservation reservation4 = new Reservation("R000004", LocalDateTime.now(), LocalDateTime.now().plusDays(4), LocalDateTime.now().plusDays(8), "CONFIRMED", car4, member4, location2, location1);
         Reservation reservation5 = new Reservation("R000005", LocalDateTime.now(), LocalDateTime.now().plusDays(5), LocalDateTime.now().plusDays(9), "CANCELLED", car5, member5, location5, location3);
+
+        // Associate equipment and services with reservations
+        reservation1.setEquipmentList(Arrays.asList(equipment1, equipment2));
+        reservation1.setServiceList(Arrays.asList(service1, service2));
+        reservation2.setEquipmentList(Arrays.asList(equipment3));
+        reservation2.setServiceList(Arrays.asList(service3));
+        reservation3.setEquipmentList(Arrays.asList(equipment4, equipment5));
+        reservation3.setServiceList(Arrays.asList(service4));
+        reservation4.setEquipmentList(Arrays.asList(equipment2, equipment5));
+        reservation4.setServiceList(Arrays.asList(service2, service5));
+        reservation5.setEquipmentList(Arrays.asList(equipment1, equipment3));
+        reservation5.setServiceList(Arrays.asList(service1, service3));
+
         reservationRepository.saveAll(Arrays.asList(reservation1, reservation2, reservation3, reservation4, reservation5));
 
         System.out.println("Sample data initialized successfully!");
