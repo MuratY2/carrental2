@@ -176,6 +176,33 @@ public class ReservationService {
     
         return true;
     }
+
+    public boolean addEquipmentToReservation(String reservationNumber, String equipmentCode) {
+        // Find the reservation by reservation number
+        Reservation reservation = reservationRepository.findByReservationNumber(reservationNumber)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation not found"));
+    
+        // Find the equipment by its code
+        Equipment equipment = equipmentRepository.findByCode(equipmentCode);
+    
+        // If equipment is not found, throw an exception
+        if (equipment == null) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Equipment not found");
+        }
+    
+        // Check if the equipment is already added
+        if (reservation.getEquipmentList().contains(equipment)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Equipment already added to reservation");
+        }
+    
+        // Add the equipment to the reservation
+        reservation.getEquipmentList().add(equipment);
+    
+        // Save the updated reservation
+        reservationRepository.save(reservation);
+    
+        return true;
+    }
     
     
 }

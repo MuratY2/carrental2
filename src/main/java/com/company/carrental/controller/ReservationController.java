@@ -46,6 +46,15 @@ public class ReservationController {
         boolean result = reservationService.cancelReservation(reservationNumber);
         return ResponseEntity.ok(result);
     }   
+
+    @PostMapping("/add-equipment")
+    public ResponseEntity<Boolean> addEquipmentToReservation(@RequestBody Map<String, String> requestBody) {
+        String reservationNumber = requestBody.get("reservationNumber");
+        String equipmentCode = requestBody.get("equipmentCode");
+        boolean result = reservationService.addEquipmentToReservation(reservationNumber, equipmentCode);
+        return ResponseEntity.ok(result);
+    }
+
     
 
 
