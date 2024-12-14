@@ -1,5 +1,6 @@
 package com.company.carrental.service;
 
+import com.company.carrental.dto.RentedCarDTO;
 import com.company.carrental.dto.ReservationRequestDTO;
 import com.company.carrental.dto.ReservationResponseDTO;
 import com.company.carrental.entity.*;
@@ -9,7 +10,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class ReservationService {
@@ -97,6 +100,30 @@ public class ReservationService {
         responseDTO.setTotalAmount(totalAmount);
 
         return responseDTO;
+    }
+
+    public List<RentedCarDTO> getAllRentedCars() {
+        List<String> statuses = List.of("LOANED", "RESERVED");
+        List<Reservation> reservations = reservationRepository.findByCar_StatusIn(statuses);
+
+        if (reservations.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No rented or reserved cars found.");
+        }
+
+        return reservations.stream()
+                .map(reservation -> new RentedCarDTO(
+                        reservation.getCar().getBrand(),
+                        reservation.getCar().getModel(),
+                        reservation.getCar().getCarType(),
+                        reservation.getCar().getTransmissionType(),
+                        reservation.getCar().getBarcode(),
+                        reservation.getReservationNumber(),
+                        reservation.getMember().getName(),
+                        reservation.getDropOffDate(),
+                        reservation.getDropOffLocation().getName(),
+                        ChronoUnit.DAYS.between(reservation.getPickUpDate(), reservation.getDropOffDate()) // Inline day count calculation
+                ))
+                .collect(Collectors.toList());
     }
 
     private String generateReservationNumber() {

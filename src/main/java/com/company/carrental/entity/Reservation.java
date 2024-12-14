@@ -109,4 +109,6 @@ public class Reservation {
 
     public List<Service> getServiceList() { return serviceList; }
     public void setServiceList(List<Service> serviceList) { this.serviceList = serviceList; }
+
+    
 }

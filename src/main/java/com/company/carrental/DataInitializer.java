@@ -49,8 +49,8 @@ public class DataInitializer implements CommandLineRunner {
 
         // Insert cars
         Car car1 = new Car("CAR001", "ABC123", "Toyota", "Corolla", "Automatic", "Standard", 5, 50.0, "AVAILABLE");
-        Car car2 = new Car("CAR002", "XYZ456", "Honda", "Civic", "Manual", "Standard", 5, 45.0, "AVAILABLE");
-        Car car3 = new Car("CAR003", "DEF789", "BMW", "X5", "Automatic", "SUV", 7, 100.0, "AVAILABLE");
+        Car car2 = new Car("CAR002", "XYZ456", "Honda", "Civic", "Manual", "Standard", 5, 45.0, "LOANED");
+        Car car3 = new Car("CAR003", "DEF789", "BMW", "X5", "Automatic", "SUV", 7, 100.0, "RESERVED");
         Car car4 = new Car("CAR004", "GHI012", "Audi", "A4", "Automatic", "Luxury", 5, 120.0, "AVAILABLE");
         Car car5 = new Car("CAR005", "JKL345", "Ford", "Focus", "Manual", "Economy", 5, 30.0, "AVAILABLE");
         carRepository.saveAll(Arrays.asList(car1, car2, car3, car4, car5));
@@ -72,25 +72,53 @@ public class DataInitializer implements CommandLineRunner {
         serviceRepository.saveAll(Arrays.asList(service1, service2, service3, service4, service5));
 
         // Insert reservations
-        Reservation reservation1 = new Reservation("R000001", LocalDateTime.now(), LocalDateTime.now().plusDays(1), LocalDateTime.now().plusDays(5), "ACTIVE", car1, member1, location1, location2);
-        Reservation reservation2 = new Reservation("R000002", LocalDateTime.now(), LocalDateTime.now().plusDays(2), LocalDateTime.now().plusDays(6), "ACTIVE", car2, member2, location3, location4);
-        Reservation reservation3 = new Reservation("R000003", LocalDateTime.now(), LocalDateTime.now().plusDays(3), LocalDateTime.now().plusDays(7), "PENDING", car3, member3, location4, location5);
-        Reservation reservation4 = new Reservation("R000004", LocalDateTime.now(), LocalDateTime.now().plusDays(4), LocalDateTime.now().plusDays(8), "CONFIRMED", car4, member4, location2, location1);
-        Reservation reservation5 = new Reservation("R000005", LocalDateTime.now(), LocalDateTime.now().plusDays(5), LocalDateTime.now().plusDays(9), "CANCELLED", car5, member5, location5, location3);
+        Reservation reservation1 = new Reservation(
+                "R000001",
+                LocalDateTime.now(),
+                LocalDateTime.now().plusDays(1),
+                LocalDateTime.now().plusDays(5),
+                "LOANED",
+                car2,
+                member1,
+                location1,
+                location2
+        );
+
+        Reservation reservation2 = new Reservation(
+                "R000002",
+                LocalDateTime.now(),
+                LocalDateTime.now().plusDays(1),
+                LocalDateTime.now().plusDays(6),
+                "RESERVED",
+                car3,
+                member2,
+                location2,
+                location1
+        );
+
+        Reservation reservation3 = new Reservation(
+                "R000003",
+                LocalDateTime.now(),
+                LocalDateTime.now().plusDays(2),
+                LocalDateTime.now().plusDays(7),
+                "CONFIRMED",
+                car4,
+                member3,
+                location3,
+                location4
+        );
 
         // Associate equipment and services with reservations
+        reservation1.setServiceList(Arrays.asList(service1));
         reservation1.setEquipmentList(Arrays.asList(equipment1, equipment2));
-        reservation1.setServiceList(Arrays.asList(service1, service2));
-        reservation2.setEquipmentList(Arrays.asList(equipment3));
-        reservation2.setServiceList(Arrays.asList(service3));
-        reservation3.setEquipmentList(Arrays.asList(equipment4, equipment5));
-        reservation3.setServiceList(Arrays.asList(service4));
-        reservation4.setEquipmentList(Arrays.asList(equipment2, equipment5));
-        reservation4.setServiceList(Arrays.asList(service2, service5));
-        reservation5.setEquipmentList(Arrays.asList(equipment1, equipment3));
-        reservation5.setServiceList(Arrays.asList(service1, service3));
 
-        reservationRepository.saveAll(Arrays.asList(reservation1, reservation2, reservation3, reservation4, reservation5));
+        reservation2.setServiceList(Arrays.asList(service2));
+        reservation2.setEquipmentList(Arrays.asList(equipment3));
+
+        reservation3.setServiceList(Arrays.asList(service3, service4));
+        reservation3.setEquipmentList(Arrays.asList(equipment4, equipment5));
+
+        reservationRepository.saveAll(Arrays.asList(reservation1, reservation2, reservation3));
 
         System.out.println("Sample data initialized successfully!");
     }
