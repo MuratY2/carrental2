@@ -155,5 +155,27 @@ public class ReservationService {
     
         return true;
     }
+
+    public boolean cancelReservation(String reservationNumber) {
+        // Find the reservation by reservation number
+        Reservation reservation = reservationRepository.findByReservationNumber(reservationNumber)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation not found"));
+    
+        // Check if the reservation is already cancelled
+        if ("CANCELLED".equalsIgnoreCase(reservation.getStatus())) {
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Reservation is already cancelled.");
+        }
+    
+        // Update the reservation status and car status
+        reservation.setStatus("CANCELLED");
+        reservation.getCar().setStatus("AVAILABLE");
+    
+        // Save updates to the database
+        reservationRepository.save(reservation);
+        carRepository.save(reservation.getCar());
+    
+        return true;
+    }
+    
     
 }

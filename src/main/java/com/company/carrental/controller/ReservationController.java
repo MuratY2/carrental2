@@ -40,4 +40,13 @@ public class ReservationController {
         return ResponseEntity.ok(result);
     }
 
+    @PostMapping("/cancel")
+    public ResponseEntity<Boolean> cancelReservation(@RequestBody Map<String, String> requestBody) {
+        String reservationNumber = requestBody.get("reservationNumber");
+        boolean result = reservationService.cancelReservation(reservationNumber);
+        return ResponseEntity.ok(result);
+    }   
+    
+
+
 }
