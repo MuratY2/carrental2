@@ -133,4 +133,27 @@ public class ReservationService {
         } while (reservationRepository.existsByReservationNumber(number));
         return number;
     }
+
+    public boolean returnCar(String reservationNumber) {
+        // Find the reservation
+        Reservation reservation = reservationRepository.findByReservationNumber(reservationNumber)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation not found"));
+    
+        // Check if the reservation status is already COMPLETED
+        if ("COMPLETED".equalsIgnoreCase(reservation.getStatus())) {
+            throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Car has already been returned.");
+        }
+    
+        // Update reservation and car
+        reservation.setStatus("COMPLETED");
+        reservation.setReturnDate(LocalDateTime.now());
+        reservation.getCar().setStatus("AVAILABLE");
+    
+        // Save the changes
+        reservationRepository.save(reservation);
+        carRepository.save(reservation.getCar());
+    
+        return true;
+    }
+    
 }

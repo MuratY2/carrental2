@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/reservations")
@@ -31,4 +32,12 @@ public class ReservationController {
         List<RentedCarDTO> rentedCars = reservationService.getAllRentedCars();
         return ResponseEntity.ok(rentedCars);
     }
+
+    @PostMapping("/return")
+    public ResponseEntity<Boolean> returnCar(@RequestBody Map<String, String> requestBody) {
+        String reservationNumber = requestBody.get("reservationNumber");
+        boolean result = reservationService.returnCar(reservationNumber);
+        return ResponseEntity.ok(result);
+    }
+
 }
