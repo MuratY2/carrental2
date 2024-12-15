@@ -55,6 +55,13 @@ public class ReservationController {
         return ResponseEntity.ok(result);
     }
 
+    @PostMapping("/delete")
+    public ResponseEntity<Boolean> deleteReservation(@RequestBody Map<String, String> requestBody) {
+        String reservationNumber = requestBody.get("reservationNumber");
+        boolean result = reservationService.deleteReservation(reservationNumber);
+        return ResponseEntity.ok(result);
+    }
+
     
 
 

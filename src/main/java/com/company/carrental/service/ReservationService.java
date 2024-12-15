@@ -203,6 +203,22 @@ public class ReservationService {
     
         return true;
     }
+
+    public boolean deleteReservation(String reservationNumber) {
+        // Find the reservation by its number
+        Reservation reservation = reservationRepository.findByReservationNumber(reservationNumber)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation not found"));
+    
+        // Check if the reservation is already canceled or completed
+        if ("CANCELLED".equalsIgnoreCase(reservation.getStatus()) || "COMPLETED".equalsIgnoreCase(reservation.getStatus())) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot delete a cancelled or completed reservation.");
+        }
+    
+        // Delete the reservation
+        reservationRepository.delete(reservation);
+        return true;
+    }
+    
     
     
 }
