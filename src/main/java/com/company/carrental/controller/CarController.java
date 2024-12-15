@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/cars")
@@ -27,5 +28,12 @@ public class CarController {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
         return new ResponseEntity<>(availableCars, HttpStatus.OK);
+    }
+
+    @PostMapping("/delete")
+    public ResponseEntity<Boolean> deleteCar(@RequestBody Map<String, String> requestBody) {
+        String barcode = requestBody.get("barcode");
+        boolean result = carService.deleteCar(barcode);
+        return ResponseEntity.ok(result);
     }
 }
