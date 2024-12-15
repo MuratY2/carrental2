@@ -1,0 +1,222 @@
+openapi: 3.0.1
+info:
+  title: Car Rental API
+  description: API documentation for the Car Rental System.
+  version: "1.0.0"
+servers:
+  - url: http://localhost:8080
+paths:
+  /api/cars/available:
+    get:
+      summary: Get all available cars
+      tags:
+        - Cars
+      responses:
+        '200':
+          description: A list of available cars.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    brand:
+                      type: string
+                    model:
+                      type: string
+                    carType:
+                      type: string
+                    transmissionType:
+                      type: string
+                    barcode:
+                      type: string
+
+  /api/reservations/make:
+    post:
+      summary: Make a reservation
+      tags:
+        - Reservations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                carBarcode:
+                  type: string
+                  description: The barcode of the car to reserve.
+                memberId:
+                  type: integer
+                  description: ID of the member making the reservation.
+                dayCount:
+                  type: integer
+                  description: Number of days for the reservation.
+                pickUpLocationCode:
+                  type: string
+                  description: Location code for pick-up.
+                dropOffLocationCode:
+                  type: string
+                  description: Location code for drop-off.
+                equipmentCodes:
+                  type: array
+                  items:
+                    type: string
+                  description: List of equipment codes to include in the reservation.
+            example:
+              carBarcode: "CAR001"
+              memberId: 1
+              dayCount: 3
+              pickUpLocationCode: "LOC1"
+              dropOffLocationCode: "LOC2"
+              equipmentCodes:
+                - "GPS"
+                - "BABY_SEAT"
+      responses:
+        '200':
+          description: Reservation created successfully.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reservationNumber:
+                    type: string
+                  pickUpDateTime:
+                    type: string
+                  dropOffDateTime:
+                    type: string
+                  totalAmount:
+                    type: number
+
+  /api/reservations/rented:
+    get:
+      summary: Get all rented cars
+      tags:
+        - Reservations
+      responses:
+        '200':
+          description: A list of rented cars.
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    reservationNumber:
+                      type: string
+                    carBarcode:
+                      type: string
+                    memberName:
+                      type: string
+
+  /api/reservations/add-equipment:
+    post:
+      summary: Add equipment to a reservation
+      tags:
+        - Reservations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reservationNumber:
+                  type: string
+                  description: The reservation number to modify.
+                equipmentCode:
+                  type: string
+                  description: The equipment code to add.
+            example:
+              reservationNumber: "12345678"
+              equipmentCode: "GPS"
+      responses:
+        '200':
+          description: Equipment added successfully.
+
+  /api/reservations/return:
+    post:
+      summary: Return a car
+      tags:
+        - Reservations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reservationNumber:
+                  type: string
+                  description: The reservation number for the return.
+            example:
+              reservationNumber: "12345678"
+      responses:
+        '200':
+          description: Car returned successfully.
+
+  /api/reservations/cancel:
+    post:
+      summary: Cancel a reservation
+      tags:
+        - Reservations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reservationNumber:
+                  type: string
+                  description: The reservation number to cancel.
+            example:
+              reservationNumber: "12345678"
+      responses:
+        '200':
+          description: Reservation cancelled successfully.
+
+  /api/reservations/delete:
+    post:
+      summary: Delete a reservation
+      tags:
+        - Reservations
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                reservationNumber:
+                  type: string
+                  description: The reservation number to delete.
+            example:
+              reservationNumber: "12345678"
+      responses:
+        '200':
+          description: Reservation deleted successfully.
+
+  /api/cars/delete:
+    post:
+      summary: Delete a car
+      tags:
+        - Cars
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                barcode:
+                  type: string
+                  description: Barcode of the car to delete.
+            example:
+              barcode: "CAR005"
+      responses:
+        '200':
+          description: Car deleted successfully.
