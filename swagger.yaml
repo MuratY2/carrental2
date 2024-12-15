@@ -153,7 +153,7 @@ paths:
                   type: string
                   description: The reservation number for the return.
             example:
-              reservationNumber: "12345678"
+              reservationNumber: "R000003"
       responses:
         '200':
           description: Car returned successfully.
@@ -174,7 +174,7 @@ paths:
                   type: string
                   description: The reservation number to cancel.
             example:
-              reservationNumber: "12345678"
+              reservationNumber: "R000001"
       responses:
         '200':
           description: Reservation cancelled successfully.

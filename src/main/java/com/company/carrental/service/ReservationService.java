@@ -121,7 +121,7 @@ public class ReservationService {
                         reservation.getMember().getName(),
                         reservation.getDropOffDate(),
                         reservation.getDropOffLocation().getName(),
-                        ChronoUnit.DAYS.between(reservation.getPickUpDate(), reservation.getDropOffDate()) // Inline day count calculation
+                        ChronoUnit.DAYS.between(reservation.getPickUpDate(), reservation.getDropOffDate()) 
                 ))
                 .collect(Collectors.toList());
     }
@@ -135,21 +135,17 @@ public class ReservationService {
     }
 
     public boolean returnCar(String reservationNumber) {
-        // Find the reservation
         Reservation reservation = reservationRepository.findByReservationNumber(reservationNumber)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation not found"));
     
-        // Check if the reservation status is already COMPLETED
         if ("COMPLETED".equalsIgnoreCase(reservation.getStatus())) {
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Car has already been returned.");
         }
     
-        // Update reservation and car
         reservation.setStatus("COMPLETED");
         reservation.setReturnDate(LocalDateTime.now());
         reservation.getCar().setStatus("AVAILABLE");
     
-        // Save the changes
         reservationRepository.save(reservation);
         carRepository.save(reservation.getCar());
     
@@ -157,20 +153,16 @@ public class ReservationService {
     }
 
     public boolean cancelReservation(String reservationNumber) {
-        // Find the reservation by reservation number
         Reservation reservation = reservationRepository.findByReservationNumber(reservationNumber)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation not found"));
     
-        // Check if the reservation is already cancelled
         if ("CANCELLED".equalsIgnoreCase(reservation.getStatus())) {
             throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Reservation is already cancelled.");
         }
     
-        // Update the reservation status and car status
         reservation.setStatus("CANCELLED");
         reservation.getCar().setStatus("AVAILABLE");
     
-        // Save updates to the database
         reservationRepository.save(reservation);
         carRepository.save(reservation.getCar());
     
@@ -178,43 +170,34 @@ public class ReservationService {
     }
 
     public boolean addEquipmentToReservation(String reservationNumber, String equipmentCode) {
-        // Find the reservation by reservation number
         Reservation reservation = reservationRepository.findByReservationNumber(reservationNumber)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation not found"));
     
-        // Find the equipment by its code
         Equipment equipment = equipmentRepository.findByCode(equipmentCode);
     
-        // If equipment is not found, throw an exception
         if (equipment == null) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Equipment not found");
         }
     
-        // Check if the equipment is already added
         if (reservation.getEquipmentList().contains(equipment)) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Equipment already added to reservation");
         }
     
-        // Add the equipment to the reservation
         reservation.getEquipmentList().add(equipment);
     
-        // Save the updated reservation
         reservationRepository.save(reservation);
     
         return true;
     }
 
     public boolean deleteReservation(String reservationNumber) {
-        // Find the reservation by its number
         Reservation reservation = reservationRepository.findByReservationNumber(reservationNumber)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Reservation not found"));
     
-        // Check if the reservation is already canceled or completed
         if ("CANCELLED".equalsIgnoreCase(reservation.getStatus()) || "COMPLETED".equalsIgnoreCase(reservation.getStatus())) {
             throw new ResponseStatusException(HttpStatus.CONFLICT, "Cannot delete a cancelled or completed reservation.");
         }
     
-        // Delete the reservation
         reservationRepository.delete(reservation);
         return true;
     }
